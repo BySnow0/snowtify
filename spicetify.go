@@ -177,6 +177,32 @@ func main() {
 		cmd.ShowSnowtifyLogs()
 		return
 
+	case "guard":
+		param := "status"
+		if len(commands) > 1 {
+			param = commands[1]
+		}
+		var err error
+		switch param {
+		case "run":
+			cmd.InitPaths()
+			err = cmd.RunGuard(version)
+		case "install", "enable":
+			err = cmd.InstallGuard()
+		case "uninstall", "disable":
+			err = cmd.UninstallGuard()
+		case "status":
+			if !cmd.ShowGuardStatus() {
+				os.Exit(1)
+			}
+		default:
+			err = errors.New(`invalid parameter; use "run", "install", "uninstall" or "status"`)
+		}
+		if err != nil {
+			utils.Fatal(err)
+		}
+		return
+
 	case "config":
 		commands = commands[1:]
 		if len(commands) == 0 {
@@ -314,6 +340,9 @@ func main() {
 			if !spotStat.IsBackupable() {
 				cmds = append([]string{"restore"}, cmds...)
 			}
+			if noRestart {
+				cmds = append([]string{"-n"}, cmds...)
+			}
 
 			cmd := exec.Command(ex, cmds...)
 			utils.CmdScanner(cmd)
@@ -395,6 +424,12 @@ Run "` + commandName + ` -h" for a list of valid commands.`))
 		}
 	}
 
+	if slices.Contains(commands, "apply") || slices.Contains(commands, "repair") {
+		cmd.SetGuardDesired(true)
+	} else if slices.Contains(commands, "restore") {
+		cmd.SetGuardDesired(false)
+	}
+
 	if !noRestart && !slices.Contains(commands, "restart") && shouldRestart {
 		cmd.SpotifyRestart()
 	}
@@ -440,6 +475,11 @@ doctor              Check Spotify paths, backup state, theme, extensions,
                     and custom apps without changing the installation.
 
 logs                Show the latest Snowtify diagnostic and repair log.
+
+guard               Background guard that reapplies Snowtify after Spotify
+                    updates, restores stock Spotify if applying fails, and
+                    installs Snowtify updates from inside Spotify.
+                    Accepts "install", "uninstall", "status" or "run".
 
 spotify-updates     Block Spotify updates by patching spotify executable.
                     Accepts "block" or "unblock" as the parameter.

@@ -249,7 +249,7 @@ func getThemeFolder(themeName string) string {
 // If input is neither of them, print form again.
 // If app is in quiet mode, returns quietModeAnswer without prompting.
 func ReadAnswer(info string, defaultAnswer bool, quietModeAnswer bool) bool {
-	if quiet {
+	if quiet || isNonInteractive() {
 		return quietModeAnswer
 	}
 

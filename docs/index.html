@@ -3,10 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Customize Spotify from PowerShell with themes, extensions, and automatic recovery." />
-    <meta name="theme-color" content="#050607" />
-    <meta property="og:image" content="assets/snowtify-icon.png" />
-    <title>Snowtify | Your Spotify, below zero</title>
+    <title>Snowtify — Your Spotify, below zero</title>
+    <meta name="description" content="Themes, extensions and Marketplace for Spotify that repair themselves after every Spotify update and update from inside Spotify." />
+    <meta name="theme-color" content="#05090c" />
+    <meta property="og:title" content="Snowtify — Your Spotify, below zero" />
+    <meta property="og:description" content="Spotify customization that survives Spotify updates. Your themes and extensions, always back." />
+    <meta property="og:image" content="https://snowtify.netlify.app/assets/snowtify-icon.png" />
+    <meta property="og:type" content="website" />
     <link rel="icon" type="image/png" href="assets/snowtify-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,118 +19,231 @@
     <script src="app.js" defer></script>
   </head>
   <body>
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Snowtify home">
-        <span class="brand-mark"><img src="assets/snowtify-icon.png" alt="" /></span>
-        <span>Snowtify</span>
-      </a>
-      <nav class="topnav" aria-label="Main navigation">
-        <a href="#features">Features</a>
-        <a href="#themes">Themes</a>
-        <a href="docs.html">Documentation</a>
-      </nav>
-      <div class="top-actions">
-        <button class="icon-button" id="theme-toggle" type="button" aria-label="Change theme" title="Change theme"><i data-lucide="sun"></i></button>
-        <a class="nav-cta" href="docs.html">Get started <i data-lucide="arrow-right"></i></a>
+      <div class="wrap">
+        <a class="brand" href="index.html" aria-label="Snowtify">
+          <img src="assets/snowtify-icon.png" alt="" width="28" height="28" />
+          <span>Snowtify</span>
+        </a>
+        <nav class="topnav" aria-label="Main">
+          <a href="#repair" data-i18n="nav.repair">Auto-repair</a>
+          <a href="#updates" data-i18n="nav.updates">Updates</a>
+          <a href="#features" data-i18n="nav.features">Features</a>
+          <a href="#themes" data-i18n="nav.themes">Themes</a>
+          <a href="docs.html" data-i18n="nav.docs">Docs</a>
+        </nav>
+        <div class="top-actions">
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" data-lang="en" aria-pressed="true">EN</button>
+            <button type="button" data-lang="es" aria-pressed="false">ES</button>
+          </div>
+          <a class="icon-link" href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer" aria-label="GitHub"><i data-lucide="github"></i></a>
+          <a class="btn btn-primary btn-sm" href="#install" data-i18n="nav.install">Install</a>
+        </div>
       </div>
     </header>
 
-    <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> Built for Spotify on Windows</p>
-          <h1 id="hero-title">Snowtify</h1>
-          <p class="hero-lead">Your Spotify, below zero.</p>
-          <p class="hero-description">A focused command-line toolkit for themes, extensions, custom apps, and reliable recovery after Spotify updates.</p>
+    <main id="main">
+      <!-- Hero -->
+      <section class="hero">
+        <canvas class="snow" aria-hidden="true"></canvas>
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <a class="release-pill" href="https://github.com/SnoW-099/snowtify/releases/latest" target="_blank" rel="noreferrer">
+              <span class="tag" data-i18n="hero.new">New</span>
+              <span data-i18n="hero.pill">Self-repair and in-app updates</span>
+              <span class="version" data-version>v2.46.7-snow.2</span>
+            </a>
+            <h1><span data-i18n="hero.title1">Your Spotify,</span><br /><span class="accent" data-i18n="hero.title2">below zero.</span></h1>
+            <p class="hero-lead" data-i18n="hero.lead">Themes, extensions and Marketplace for Spotify — and when Spotify updates itself, Snowtify puts everything back on its own.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#install"><i data-lucide="download"></i><span data-i18n="hero.install">Install for Windows</span></a>
+              <a class="btn btn-ghost" href="docs.html"><i data-lucide="book-open"></i><span data-i18n="hero.docs">Read the docs</span></a>
+            </div>
+            <div class="install-box" id="install">
+              <span class="prompt">PS&gt;</span>
+              <code id="install-cmd">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/install.ps1 | iex</code>
+              <button class="copy-btn" type="button" data-copy="install-cmd"><i data-lucide="copy"></i><span data-i18n="copy">Copy</span></button>
+            </div>
+            <p class="install-hint" data-i18n="hero.hint">Paste it in PowerShell as your normal user. Your current themes and extensions are kept.</p>
+          </div>
+
+          <div class="demo reveal" aria-label="Snowtify updating itself inside Spotify" role="img">
+            <div class="demo-bar"><i></i><i></i><i></i></div>
+            <div class="demo-app" aria-hidden="true">
+              <div class="demo-side">
+                <span class="sk" style="width: 60%"></span>
+                <span class="sk" style="width: 45%"></span>
+                <span class="sk" style="width: 70%; margin-bottom: 8px"></span>
+                <div class="sk-row"><span class="sk-thumb"></span><span class="sk" style="width: 70%"></span></div>
+                <div class="sk-row"><span class="sk-thumb"></span><span class="sk" style="width: 55%"></span></div>
+                <div class="sk-row"><span class="sk-thumb"></span><span class="sk" style="width: 62%"></span></div>
+                <div class="sk-row"><span class="sk-thumb"></span><span class="sk" style="width: 48%"></span></div>
+              </div>
+              <div class="demo-main">
+                <span class="sk" style="width: 38%; height: 14px"></span>
+                <div class="sk-cards"><span class="sk-card"></span><span class="sk-card"></span><span class="sk-card"></span><span class="sk-card"></span></div>
+              </div>
+              <div class="demo-player"><span class="sk-thumb"></span><span class="sk" style="width: 18%"></span><span class="sk" style="width: 40%; margin-left: auto; margin-right: auto"></span></div>
+            </div>
+            <div class="demo-scrim">
+              <div class="update-card" data-update-card></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trust strip -->
+      <section class="trust" aria-label="Highlights">
+        <div class="wrap">
+          <ul>
+            <li><i data-lucide="shield-check"></i><span><strong data-i18n="trust.1a">Never left broken</strong><span data-i18n="trust.1b">Falls back to stock Spotify if anything fails</span></span></li>
+            <li><i data-lucide="refresh-cw"></i><span><strong data-i18n="trust.2a">Fixes itself</strong><span data-i18n="trust.2b">Reapplied seconds after Spotify updates</span></span></li>
+            <li><i data-lucide="store"></i><span><strong data-i18n="trust.3a">Marketplace ready</strong><span data-i18n="trust.3b">Every Spicetify theme and extension</span></span></li>
+            <li><i data-lucide="feather"></i><span><strong data-i18n="trust.4a">Featherweight</strong><span data-i18n="trust.4b">Idle in the background, no windows</span></span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Auto-repair -->
+      <section class="section" id="repair">
+        <div class="wrap split">
+          <div class="reveal">
+            <div class="section-head">
+              <p class="label" data-i18n="repair.label">Built to come back</p>
+              <h2 data-i18n="repair.title">Spotify updated? Already fixed.</h2>
+              <p data-i18n="repair.lead">Spotify updates itself and wipes every customization. Snowtify's guard notices within seconds and puts your setup back — before you even open a playlist.</p>
+            </div>
+            <ol class="timeline">
+              <li><div><strong data-i18n="repair.s1a">Spotify updates itself</strong><span data-i18n="repair.s1b">Its new files replace your theme and extensions.</span></div></li>
+              <li><div><strong data-i18n="repair.s2a">The guard notices</strong><span data-i18n="repair.s2b">A tiny check every few seconds spots the change.</span></div></li>
+              <li><div><strong data-i18n="repair.s3a">Everything comes back</strong><span data-i18n="repair.s3b">Snowtify reapplies your exact setup and restarts Spotify.</span></div></li>
+            </ol>
+            <div class="safety"><i data-lucide="life-buoy"></i><p><strong data-i18n="repair.safeA">Never a broken Spotify.</strong> <span data-i18n="repair.safeB">If a brand-new Spotify isn't supported yet, Snowtify restores stock Spotify and tries again as soon as an update lands.</span></p></div>
+          </div>
+
+          <div class="console reveal" data-console aria-label="Snowtify guard log">
+            <header><strong><span class="live-dot"></span>snowtify guard</strong><span data-i18n="repair.log">Live log</span></header>
+            <ol>
+              <li><time>10:49:04</time><span data-i18n="log.1">Spotify updated 1.3.6 → 1.3.9</span></li>
+              <li class="warn"><time>10:49:19</time><span data-i18n="log.2">Customization missing — confirming…</span></li>
+              <li><time>10:49:34</time><span data-i18n="log.3">Rebuilding backup for Spotify 1.3.9</span></li>
+              <li><time>10:51:58</time><span data-i18n="log.4">Theme, extensions and apps reapplied</span></li>
+              <li class="ok"><time>10:52:13</time><span data-i18n="log.5">✓ Repair completed · Spotify restarted</span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- In-app updates -->
+      <section class="section section-alt" id="updates">
+        <div class="wrap split">
+          <div class="update-stage reveal">
+            <div class="update-card" data-update-card data-loop="false"></div>
+            <button class="btn btn-ghost btn-sm replay" type="button" data-replay><i data-lucide="rotate-ccw"></i><span data-i18n="updates.replay">Replay</span></button>
+          </div>
+          <div class="reveal">
+            <div class="section-head">
+              <p class="label" data-i18n="updates.label">Updates without commands</p>
+              <h2 data-i18n="updates.title">New version? It installs itself.</h2>
+              <p data-i18n="updates.lead">When a new Snowtify ships, you'll see it right inside Spotify. It downloads, reapplies your setup and restarts Spotify — no PowerShell, no copy and paste.</p>
+            </div>
+            <ul class="checks">
+              <li><i data-lucide="check"></i><span><strong data-i18n="updates.c1a">Keeps your setup.</strong> <span data-i18n="updates.c1b">Themes, extensions, custom apps and settings stay as they are.</span></span></li>
+              <li><i data-lucide="check"></i><span><strong data-i18n="updates.c2a">Follows Spicetify closely.</strong> <span data-i18n="updates.c2b">New Spicetify releases are merged and shipped within hours.</span></span></li>
+              <li><i data-lucide="check"></i><span><strong data-i18n="updates.c3a">Safe by design.</strong> <span data-i18n="updates.c3b">Only Spotify itself can ask the guard to update; websites can't.</span></span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="section" id="features">
+        <div class="wrap">
+          <div class="section-head center reveal">
+            <p class="label" data-i18n="features.label">The essentials</p>
+            <h2 data-i18n="features.title">Everything Spicetify does. Without the babysitting.</h2>
+            <p data-i18n="features.lead">Snowtify is a stability-focused fork of Spicetify CLI, so the whole ecosystem keeps working.</p>
+          </div>
+          <div class="features reveal">
+            <article class="feature"><span class="ico"><i data-lucide="palette"></i></span><h3 data-i18n="f.1a">Themes</h3><p data-i18n="f.1b">Recolor and restyle every surface of Spotify, from Marketplace or your own CSS.</p></article>
+            <article class="feature"><span class="ico"><i data-lucide="puzzle"></i></span><h3 data-i18n="f.2a">Extensions</h3><p data-i18n="f.2b">Add features to the player: lyrics, shuffle tweaks, stats and hundreds more.</p></article>
+            <article class="feature"><span class="ico"><i data-lucide="layout-grid"></i></span><h3 data-i18n="f.3a">Custom apps</h3><p data-i18n="f.3b">Whole new pages inside Spotify, including Marketplace itself.</p></article>
+            <article class="feature"><span class="ico"><i data-lucide="stethoscope"></i></span><h3 data-i18n="f.4a">Doctor &amp; logs</h3><p data-i18n="f.4b"><code>snowtify doctor</code> checks everything without touching it; <code>logs</code> shows what happened.</p></article>
+            <article class="feature"><span class="ico"><i data-lucide="user-check"></i></span><h3 data-i18n="f.5a">Your theme stays yours</h3><p data-i18n="f.5b">Snowtify never switches your theme. Install, update, repair — your look is untouched.</p></article>
+            <article class="feature"><span class="ico"><i data-lucide="code-2"></i></span><h3 data-i18n="f.6a">Open source</h3><p data-i18n="f.6b">LGPL-2.1, built on Spicetify CLI. Read every line on GitHub.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Themes -->
+      <section class="section section-alt" id="themes">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <p class="label" data-i18n="themes.label">Your style</p>
+            <h2 data-i18n="themes.title">Spotify, your way.</h2>
+            <p data-i18n="themes.lead">Hundreds of community themes from Marketplace work out of the box.</p>
+          </div>
+          <div class="gallery reveal">
+            <figure><img src="assets/showcase/1.png" alt="Pastel theme for Spotify" loading="lazy" /><figcaption>Pastel</figcaption></figure>
+            <figure><img src="assets/showcase/2.png" alt="Minimal theme for Spotify" loading="lazy" /><figcaption>Minimal</figcaption></figure>
+            <figure><img src="assets/showcase/6.png" alt="Electric theme for Spotify" loading="lazy" /><figcaption>Electric</figcaption></figure>
+          </div>
+          <p class="credit"><span data-i18n="themes.credit">Theme screenshots from</span> <a href="https://github.com/spicetify/docs" target="_blank" rel="noreferrer">spicetify/docs</a> (LGPL-2.1).</p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section" id="faq">
+        <div class="wrap">
+          <div class="section-head center reveal">
+            <p class="label" data-i18n="faq.label">Questions</p>
+            <h2 data-i18n="faq.title">Good to know</h2>
+          </div>
+          <div class="faq reveal">
+            <details><summary data-i18n="faq.q1">I already use Spicetify. Will I lose anything?</summary><p data-i18n="faq.a1">No. Snowtify uses the same configuration folder, so your themes, extensions and Marketplace stay exactly as they are.</p></details>
+            <details><summary data-i18n="faq.q2">What happens when Spotify updates?</summary><p data-i18n="faq.a2">The guard reapplies Snowtify automatically, usually within a minute. If that Spotify version isn't supported yet, it restores stock Spotify so it keeps working and retries when a Snowtify update is out.</p></details>
+            <details><summary data-i18n="faq.q3">Does the guard slow my PC down?</summary><p data-i18n="faq.a3">No. It reads one folder every few seconds and otherwise sleeps. It only does real work right after Spotify updates.</p></details>
+            <details><summary data-i18n="faq.q4">Is it safe?</summary><p data-i18n="faq.a4">Snowtify only touches Spotify's own interface files and keeps a clean backup. The guard listens only on your own computer and only accepts requests from Spotify.</p></details>
+            <details><summary data-i18n="faq.q5">How do I remove it?</summary><p data-i18n="faq.a5">Run the uninstaller from the docs. It restores Spotify first, then removes Snowtify; your other Spicetify settings are left alone.</p></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta">
+        <canvas class="snow" aria-hidden="true"></canvas>
+        <div class="wrap reveal">
+          <img class="cta-logo" src="assets/snowtify-icon.png" alt="" width="64" height="64" />
+          <h2 data-i18n="cta.title">Make Spotify yours.</h2>
+          <p data-i18n="cta.lead">One command. Then it takes care of itself.</p>
+          <div class="install-box">
+            <span class="prompt">PS&gt;</span>
+            <code id="install-cmd-2">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/install.ps1 | iex</code>
+            <button class="copy-btn" type="button" data-copy="install-cmd-2"><i data-lucide="copy"></i><span data-i18n="copy">Copy</span></button>
+          </div>
           <div class="hero-actions">
-            <a class="primary-button" href="docs.html"><i data-lucide="book-open"></i> Read the docs</a>
-            <a class="secondary-button" href="#install">Download <i data-lucide="arrow-down"></i></a>
+            <a class="btn btn-ghost" href="docs.html"><i data-lucide="book-open"></i><span data-i18n="hero.docs">Read the docs</span></a>
+            <a class="btn btn-ghost" href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer"><i data-lucide="github"></i>GitHub</a>
           </div>
-          <div class="install-pill" id="install" aria-label="Installation command">
-            <i data-lucide="terminal"></i>
-            <code id="install-command">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/install.ps1 | iex</code>
-            <button type="button" data-copy-target="install-command" aria-label="Copy command" title="Copy command"><i data-lucide="copy"></i></button>
-          </div>
-        </div>
-
-        <div class="product-stage" aria-label="Snowtify inside Spotify">
-          <div class="window-bar"><span></span><span></span><span></span><p>Spotify · Marketplace</p></div>
-          <img src="assets/showcase/marketplace.png" alt="Theme and extension Marketplace inside Spotify" />
-        </div>
-      </section>
-
-      <section class="product-facts" aria-label="Product details">
-          <p><span>Current release</span><strong>v2.44.0-snow.9</strong></p>
-          <p><span>Windows builds</span><strong>x64 · ARM64 · x32</strong></p>
-          <p><span>Compatibility</span><strong>Marketplace ready</strong></p>
-          <p><span>License</span><strong>Open source</strong></p>
-      </section>
-
-      <section class="features-section" id="features" aria-labelledby="features-title">
-        <header class="section-intro">
-          <p class="section-label">The essentials</p>
-          <h2 id="features-title">Everything you need.<br />Nothing you don't.</h2>
-          <p>Snowtify keeps the familiar ecosystem while making installation and recovery feel dependable.</p>
-        </header>
-        <div class="feature-strip" aria-label="Main features">
-          <article><span>01</span><i data-lucide="palette"></i><h3>Themes</h3><p>Change every color, detail, and surface in Spotify.</p></article>
-          <article><span>02</span><i data-lucide="blocks"></i><h3>Extensions</h3><p>Add controls and features connected to the player.</p></article>
-          <article><span>03</span><i data-lucide="wrench"></i><h3>Repair</h3><p>Restore your customization after an update.</p></article>
-        </div>
-      </section>
-
-      <section class="repair-section">
-        <div class="repair-copy">
-          <p class="section-label">Built to come back</p>
-          <h2>One command.<br />Everything restored.</h2>
-          <p>Use Doctor to inspect every important path and component. Repair then rebuilds what is needed and reapplies your configuration.</p>
-          <div class="repair-command"><code id="repair-command">snowtify repair</code><button type="button" data-copy-target="repair-command" aria-label="Copy command"><i data-lucide="copy"></i></button></div>
-        </div>
-        <div class="repair-console" aria-label="Successful Snowtify repair status">
-          <header>
-            <div><span class="status-dot"></span><strong>System recovery</strong></div>
-            <code>snowtify repair</code>
-          </header>
-          <div class="repair-steps">
-            <p><span><i data-lucide="check"></i> Spotify installation</span><strong>Found</strong></p>
-            <p><span><i data-lucide="check"></i> Backup integrity</span><strong>Verified</strong></p>
-            <p><span><i data-lucide="check"></i> Custom assets</span><strong>Restored</strong></p>
-            <p><span><i data-lucide="check"></i> Marketplace bridge</span><strong>Ready</strong></p>
-          </div>
-          <footer><span><i data-lucide="shield-check"></i> Recovery complete</span><time>2.4s</time></footer>
-        </div>
-      </section>
-
-      <section class="themes-section" id="themes">
-        <header>
-          <div><p class="section-label">Your style</p><h2>Spotify, your way.</h2></div>
-          <p>Compatible with the theme and extension ecosystem you already know.</p>
-        </header>
-        <div class="theme-grid">
-          <figure class="theme-large"><img src="assets/showcase/1.png" alt="Pastel theme for Spotify" /><figcaption>Pastel</figcaption></figure>
-          <figure><img src="assets/showcase/2.png" alt="Minimal theme for Spotify" /><figcaption>Minimal</figcaption></figure>
-          <figure><img src="assets/showcase/6.png" alt="Electric theme for Spotify" /><figcaption>Electric</figcaption></figure>
-        </div>
-      </section>
-
-      <section class="final-cta">
-        <img src="assets/snowtify-icon.png" alt="Icono de Snowtify" />
-        <p class="section-label">v2.44.0-snow.7</p>
-        <h2>Make Spotify yours.</h2>
-        <p>Install Snowtify from PowerShell and keep your themes, extensions, and configuration.</p>
-        <div class="hero-actions">
-          <a class="primary-button" href="docs.html">Open documentation <i data-lucide="arrow-right"></i></a>
-          <a class="secondary-button" href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer"><i data-lucide="github"></i> GitHub</a>
         </div>
       </section>
     </main>
 
-    <footer>
-      <a class="brand" href="index.html"><span class="brand-mark"><img src="assets/snowtify-icon.png" alt="" /></span><span>Snowtify</span></a>
-      <p>An independent project by SnoW-099, based on Spicetify CLI.</p>
-      <a href="docs.html">Documentation <i data-lucide="arrow-right"></i></a>
+    <footer class="site-footer">
+      <div class="wrap">
+        <a class="brand" href="index.html"><img src="assets/snowtify-icon.png" alt="" width="24" height="24" /><span>Snowtify</span></a>
+        <p data-i18n="footer.by">An independent project by SnoW-099, based on Spicetify CLI. Not affiliated with Spotify.</p>
+        <nav aria-label="Footer">
+          <a href="docs.html" data-i18n="nav.docs">Docs</a>
+          <a href="https://github.com/SnoW-099/snowtify/releases" target="_blank" rel="noreferrer" data-i18n="footer.releases">Releases</a>
+          <a href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
     </footer>
-    <p class="asset-credit">Screenshots adapted from <a href="https://github.com/spicetify/docs" target="_blank" rel="noreferrer">spicetify/docs</a> under LGPL-2.1.</p>
-    <div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="check"></i> Copied</div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="check"></i><span data-i18n="copied">Copied to clipboard</span></div>
   </body>
 </html>

@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Official Snowtify documentation: installation, recovery, and commands." />
-    <meta name="theme-color" content="#050607" />
-    <title>Documentation | Snowtify</title>
+    <title>Documentation — Snowtify</title>
+    <meta name="description" content="Install, update, repair and uninstall Snowtify. Commands, the background guard and troubleshooting." />
+    <meta name="theme-color" content="#05090c" />
     <link rel="icon" type="image/png" href="assets/snowtify-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,106 +14,149 @@
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
     <script src="app.js" defer></script>
   </head>
-  <body class="docs-page">
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
     <header class="topbar">
-      <a class="brand" href="index.html"><span class="brand-mark"><img src="assets/snowtify-icon.png" alt="" /></span><span>Snowtify</span><span class="docs-badge">Docs</span></a>
-      <nav class="topnav"><a href="index.html">Home</a><a href="#install">Installation</a><a href="#commands">Commands</a><a class="danger-link" href="#uninstall">Uninstall</a></nav>
-      <div class="top-actions">
-        <button class="icon-button" id="theme-toggle" type="button" aria-label="Change theme" title="Change theme"><i data-lucide="sun"></i></button>
-        <a class="github-icon" href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer" aria-label="GitHub"><i data-lucide="github"></i></a>
+      <div class="wrap">
+        <a class="brand" href="index.html" aria-label="Snowtify home">
+          <img src="assets/snowtify-icon.png" alt="" width="28" height="28" />
+          <span>Snowtify</span><span class="docs-badge">Docs</span>
+        </a>
+        <nav class="topnav" aria-label="Main">
+          <a href="index.html">Home</a>
+          <a href="#install">Install</a>
+          <a href="#guard">Guard</a>
+          <a href="#commands">Commands</a>
+        </nav>
+        <div class="top-actions">
+          <a class="icon-link" href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer" aria-label="GitHub"><i data-lucide="github"></i></a>
+          <a class="btn btn-primary btn-sm" href="#install">Install</a>
+        </div>
       </div>
     </header>
 
-    <main class="docs-layout">
+    <main id="main" class="wrap docs-layout">
       <aside class="docs-sidebar">
-        <label class="search-box" for="docs-search"><i data-lucide="search"></i><input id="docs-search" type="search" placeholder="Search" autocomplete="off" /></label>
-        <nav aria-label="Documentation index">
-          <p>Getting started</p><a class="active" href="#install">Installation</a><a href="#first-run">First run</a>
-          <p>Maintenance</p><a href="#repair">Diagnostics &amp; repair</a><a href="#update">Update</a><a href="#marketplace">Marketplace</a>
-          <p>Reference</p><a href="#commands">Commands</a><a href="#faq">Troubleshooting</a>
-          <p>Removal</p><a class="danger-link" href="#uninstall">Uninstall Snowtify</a>
+        <label class="search-box" for="docs-search"><i data-lucide="search"></i><input id="docs-search" type="search" placeholder="Search the docs" autocomplete="off" /></label>
+        <nav aria-label="Documentation">
+          <p>Getting started</p>
+          <a class="active" href="#install">Installation</a>
+          <a href="#first-run">Already using Spicetify?</a>
+          <p>Keeping it working</p>
+          <a href="#guard">The guard</a>
+          <a href="#update">Updates</a>
+          <a href="#repair">Diagnostics &amp; repair</a>
+          <p>Reference</p>
+          <a href="#marketplace">Marketplace &amp; themes</a>
+          <a href="#commands">Commands</a>
+          <a href="#faq">Troubleshooting</a>
+          <p>Removal</p>
+          <a href="#uninstall">Uninstall</a>
         </nav>
       </aside>
 
       <article class="docs-content">
-        <header class="docs-intro"><p class="section-label">Snowtify guide</p><h1>Documentation</h1><p>Everything you need to install, customize, and restore Spotify from PowerShell.</p></header>
+        <header class="docs-intro">
+          <p class="label">Snowtify guide · <span data-version>v2.46.7-snow.2</span></p>
+          <h1>Documentation</h1>
+          <p>Install once. Snowtify keeps your themes and extensions working through every Spotify update.</p>
+        </header>
 
-        <section class="doc-section searchable" id="install" data-search="installation powershell windows download requirements spotify website microsoft store administrator">
-          <div class="section-heading"><span>01</span><div><h2>Installation</h2><p>Run PowerShell as a standard user.</p></div></div>
-          <div class="note"><i data-lucide="monitor-down"></i><p><strong>Before you install:</strong> Use the desktop version of Spotify downloaded from <a href="https://www.spotify.com/download/windows/" target="_blank" rel="noreferrer">spotify.com</a>, not the Microsoft Store package. Open PowerShell as a standard user, not as administrator.</p></div>
-          <div class="code-block"><div class="code-title"><span>PowerShell</span><button type="button" data-copy-target="install-code"><i data-lucide="copy"></i> Copy</button></div><pre><code id="install-code">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/install.ps1 | iex</code></pre></div>
-          <div class="note"><i data-lucide="info"></i><p>Snowtify reuses <code>%APPDATA%\spicetify</code>. Your existing themes, extensions, and settings remain available.</p></div>
-        </section>
-
-        <section class="doc-section searchable" id="first-run" data-search="first run backup apply spotify">
-          <div class="section-heading"><span>02</span><div><h2>First run</h2><p>Create a clean backup and apply your customization.</p></div></div>
-          <div class="code-block compact"><pre><code id="first-code">snowtify backup apply</code></pre><button class="floating-copy" type="button" data-copy-target="first-code" aria-label="Copy command"><i data-lucide="copy"></i></button></div>
-        </section>
-
-        <section class="doc-section searchable" id="repair" data-search="doctor repair logs diagnostic bug update missing spotify">
-          <div class="section-heading"><span>03</span><div><h2>Diagnostics &amp; repair</h2><p>Inspect the installation, recover customization, and review the latest result.</p></div></div>
-          <div class="command-table" role="table" aria-label="Snowtify maintenance commands">
-            <div class="table-row table-head" role="row"><span>Command</span><span>Purpose</span></div>
-            <div class="table-row" role="row"><code>snowtify doctor</code><span>Checks Spotify paths, backup state, theme, extensions, and custom apps without changing anything.</span></div>
-            <div class="table-row" role="row"><code>snowtify repair</code><span>Rebuilds what is needed and reapplies the current customization.</span></div>
-            <div class="table-row" role="row"><code>snowtify logs</code><span>Shows the latest diagnostic and repair report.</span></div>
+        <section class="doc-section searchable" id="install" data-search="install installation powershell windows download requirements microsoft store administrator">
+          <div class="section-heading"><span>01</span><div><h2>Installation</h2><p>Windows 10 or 11 with the desktop version of Spotify.</p></div></div>
+          <div class="note"><i data-lucide="monitor-down"></i><p><strong>Before you start:</strong> use Spotify from <a href="https://www.spotify.com/download/windows/" target="_blank" rel="noreferrer">spotify.com</a>, not the Microsoft Store version, and open PowerShell as your <strong>normal user</strong> (not as administrator).</p></div>
+          <div class="code-block">
+            <div class="code-title"><span>PowerShell</span><button class="copy-btn" type="button" data-copy="install-code"><i data-lucide="copy"></i>Copy</button></div>
+            <pre><code id="install-code">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/install.ps1 | iex</code></pre>
           </div>
-          <div class="note"><i data-lucide="stethoscope"></i><p>Start with <code>snowtify doctor</code>. When it reports a recoverable Spotify update or missing customization, run <code>snowtify repair</code>.</p></div>
+          <p class="lead">The installer downloads Snowtify, optionally installs Marketplace, applies Snowtify to Spotify with your current theme and extensions, and turns on the background guard.</p>
         </section>
 
-        <section class="doc-section searchable" id="update" data-search="update version release reinstall uninstall">
-          <div class="section-heading"><span>04</span><div><h2>Update</h2><p>Update Snowtify in place without uninstalling, reinstalling, or losing your configuration.</p></div></div>
-          <div class="code-block compact"><pre><code id="update-code">snowtify update</code></pre><button class="floating-copy" type="button" data-copy-target="update-code" aria-label="Copy command"><i data-lucide="copy"></i></button></div>
-          <div class="note"><i data-lucide="refresh-cw"></i><p>The updater downloads the latest Snowtify release, preserves your setup, and reapplies it to Spotify automatically.</p></div>
-          <p>When a newer Snowtify version is available, Spotify opens the update panel at startup and keeps a Snowtify button in the top bar. Nothing is shown while your installation is current.</p>
+        <section class="doc-section searchable" id="first-run" data-search="spicetify existing migrate config themes extensions keep">
+          <div class="section-heading"><span>02</span><div><h2>Already using Spicetify?</h2><p>Nothing to migrate.</p></div></div>
+          <div class="note"><i data-lucide="folder-check"></i><p>Snowtify reads the same <code>%APPDATA%\spicetify</code> folder, so your themes, extensions, custom apps and settings carry over. The <code>spicetify</code> command keeps working as an alias.</p></div>
         </section>
 
-        <section class="doc-section searchable" id="marketplace" data-search="marketplace themes extensions compatible frost installed remove replace">
-          <div class="section-heading"><span>05</span><div><h2>Marketplace</h2><p>Install community themes and extensions from Spotify.</p></div></div>
-          <p>Snowtify preserves the internal <code>Spicetify.*</code> API and the compatibility alias required by Marketplace. The default <strong>Snowtify Frost</strong> theme appears under <strong>Marketplace &gt; Installed</strong>, where you can remove it or replace it with any Marketplace theme.</p>
+        <section class="doc-section searchable" id="guard" data-search="guard background auto repair spotify update automatic startup install uninstall status">
+          <div class="section-heading"><span>03</span><div><h2>The guard</h2><p>A tiny background helper that keeps Snowtify applied.</p></div></div>
+          <p>Spotify updates itself every few weeks and wipes every customization when it does. The guard starts with Windows, checks Spotify's files every few seconds and:</p>
+          <div class="cmd-table" role="table" aria-label="What the guard does">
+            <div class="head" role="row"><span>When</span><span>What the guard does</span></div>
+            <div role="row"><strong>Spotify updated</strong><span>Reapplies Snowtify with your setup and restarts Spotify, usually within a minute.</span></div>
+            <div role="row"><strong>Applying fails</strong><span>Restores stock Spotify so it keeps working, then retries when a newer Snowtify is out.</span></div>
+            <div role="row"><strong>Snowtify update out</strong><span>Installs it from inside Spotify with a progress screen, or silently while Spotify is closed.</span></div>
+          </div>
+          <div class="code-block compact"><pre><code id="guard-code">snowtify guard status</code></pre><button class="copy-btn" type="button" data-copy="guard-code"><i data-lucide="copy"></i>Copy</button></div>
+          <div class="note"><i data-lucide="info"></i><p>Turn it on with <code>snowtify guard install</code> and off with <code>snowtify guard uninstall</code>. Running <code>snowtify restore</code> pauses auto-repair until you run <code>snowtify apply</code> again. The guard only listens on your own computer and only accepts requests from Spotify.</p></div>
         </section>
 
-        <section class="doc-section searchable" id="commands" data-search="commands config apply restore doctor repair logs update version">
-          <div class="section-heading"><span>06</span><div><h2>Essential commands</h2><p>A quick reference for everyday use.</p></div></div>
-          <div class="command-table" role="table" aria-label="Snowtify commands">
-            <div class="table-row table-head" role="row"><span>Command</span><span>Purpose</span></div>
-            <div class="table-row" role="row"><code>snowtify --version</code><span>Shows the installed Snowtify version.</span></div>
-            <div class="table-row" role="row"><code>snowtify doctor</code><span>Checks the complete installation without changing it.</span></div>
-            <div class="table-row" role="row"><code>snowtify apply</code><span>Applies the current configuration.</span></div>
-            <div class="table-row" role="row"><code>snowtify repair</code><span>Repairs and reapplies after an update or startup issue.</span></div>
-            <div class="table-row" role="row"><code>snowtify logs</code><span>Displays the latest maintenance report.</span></div>
-            <div class="table-row" role="row"><code>snowtify update</code><span>Updates Snowtify in place and preserves your setup.</span></div>
-            <div class="table-row" role="row"><code>snowtify restore</code><span>Restores Spotify to its original state.</span></div>
-            <div class="table-row" role="row"><code>snowtify config</code><span>Displays or changes the configuration.</span></div>
+        <section class="doc-section searchable" id="update" data-search="update version release upgrade automatic in app">
+          <div class="section-heading"><span>04</span><div><h2>Updates</h2><p>Automatic with the guard; one command without it.</p></div></div>
+          <p>With the guard on, new versions appear inside Spotify when you open it: Snowtify downloads the release, reapplies your setup and restarts Spotify on its own. Without the guard, Spotify shows an update panel with the command to run:</p>
+          <div class="code-block compact"><pre><code id="update-code">snowtify update</code></pre><button class="copy-btn" type="button" data-copy="update-code"><i data-lucide="copy"></i>Copy</button></div>
+        </section>
+
+        <section class="doc-section searchable" id="repair" data-search="doctor repair logs diagnostic broken missing black screen">
+          <div class="section-heading"><span>05</span><div><h2>Diagnostics &amp; repair</h2><p>For the rare case something still looks off.</p></div></div>
+          <div class="cmd-table" role="table" aria-label="Maintenance commands">
+            <div class="head" role="row"><span>Command</span><span>What it does</span></div>
+            <div role="row"><code>snowtify doctor</code><span>Checks Spotify, the backup, theme, extensions and apps without changing anything.</span></div>
+            <div role="row"><code>snowtify repair</code><span>Rebuilds the backup if needed and reapplies your setup.</span></div>
+            <div role="row"><code>snowtify logs</code><span>Shows the latest diagnostic, repair and guard log.</span></div>
           </div>
         </section>
 
-        <section class="doc-section searchable" id="faq" data-search="troubleshooting black screen bug missing">
-          <div class="section-heading"><span>07</span><div><h2>Troubleshooting</h2><p>Quick fixes to try before asking for help.</p></div></div>
-          <details><summary>Snowtify disappeared after Spotify updated</summary><p>Run <code>snowtify doctor</code>, followed by <code>snowtify repair</code>. If Spotify changed significantly, run <code>snowtify update</code> first.</p></details>
-          <details><summary>Spotify opens with a frozen interface</summary><p>Run <code>snowtify doctor</code> to find missing components. Temporarily disable the latest theme or extension you installed, then run <code>snowtify repair</code>.</p></details>
-          <details><summary>I need to share a diagnostic report</summary><p>Run <code>snowtify doctor</code> and then <code>snowtify logs</code>. The latter prints the saved report and its file path.</p></details>
-          <details><summary>PowerShell cannot find the snowtify command</summary><p>Close PowerShell and open it again so Windows reloads your user PATH, then run <code>snowtify --version</code>.</p></details>
+        <section class="doc-section searchable" id="marketplace" data-search="marketplace themes extensions frost theme default">
+          <div class="section-heading"><span>06</span><div><h2>Marketplace &amp; themes</h2><p>The whole Spicetify ecosystem works.</p></div></div>
+          <p>Snowtify keeps the internal <code>Spicetify</code> API, so Marketplace and community themes, extensions and apps work unchanged. Snowtify never changes your theme. The <strong>Snowtify Frost</strong> theme is available in Marketplace if you want it.</p>
         </section>
 
-        <section class="doc-section searchable uninstall-section" id="uninstall" data-search="uninstall remove delete restore cleanup powershell">
-          <div class="section-heading"><span>08</span><div><h2>Uninstall Snowtify</h2><p>Restore Spotify and remove Snowtify safely.</p></div></div>
-          <div class="uninstall-warning">
-            <i data-lucide="triangle-alert"></i>
-            <div><strong>Run this only if you want to remove Snowtify.</strong><p>The official uninstaller restores Spotify before deleting any Snowtify files.</p></div>
-          </div>
-          <div class="code-block uninstall-code">
-            <div class="code-title"><span>PowerShell</span><button type="button" data-copy-target="uninstall-command"><i data-lucide="copy"></i> Copy</button></div>
-            <pre><code id="uninstall-command">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/uninstall.ps1 | iex</code></pre>
-          </div>
-          <div class="removal-summary">
-            <p><i data-lucide="check"></i><span><strong>Removed</strong> Snowtify CLI, its PATH entry, and the Frost layer.</span></p>
-            <p><i data-lucide="shield-check"></i><span><strong>Preserved</strong> Your other themes, extensions, and Spicetify configuration.</span></p>
+        <section class="doc-section searchable" id="commands" data-search="commands reference config apply restore version guard">
+          <div class="section-heading"><span>07</span><div><h2>Commands</h2><p>Everyday reference.</p></div></div>
+          <div class="cmd-table" role="table" aria-label="Snowtify commands">
+            <div class="head" role="row"><span>Command</span><span>What it does</span></div>
+            <div role="row"><code>snowtify apply</code><span>Applies your current configuration to Spotify.</span></div>
+            <div role="row"><code>snowtify restore</code><span>Returns Spotify to its original state.</span></div>
+            <div role="row"><code>snowtify update</code><span>Updates Snowtify and reapplies your setup.</span></div>
+            <div role="row"><code>snowtify guard install</code><span>Starts the guard now and at every logon.</span></div>
+            <div role="row"><code>snowtify guard status</code><span>Shows whether the guard runs and if an update is pending.</span></div>
+            <div role="row"><code>snowtify doctor</code><span>Read-only health check.</span></div>
+            <div role="row"><code>snowtify repair</code><span>Reapplies after a problem.</span></div>
+            <div role="row"><code>snowtify config</code><span>Shows or changes configuration values.</span></div>
+            <div role="row"><code>snowtify -v</code><span>Prints the installed version.</span></div>
           </div>
         </section>
-        <div class="no-results" hidden><i data-lucide="search-x"></i><p>No matching section found.</p></div>
+
+        <section class="doc-section searchable" id="faq" data-search="troubleshooting problems frozen black screen command not found">
+          <div class="section-heading"><span>08</span><div><h2>Troubleshooting</h2><p>Quick fixes.</p></div></div>
+          <details><summary>Snowtify disappeared after Spotify updated</summary><p>With the guard on, wait a minute: it reapplies on its own. Otherwise run <code>snowtify guard status</code>; if it isn't running, run <code>snowtify repair</code> and then <code>snowtify guard install</code>.</p></details>
+          <details><summary>Spotify opens blank or frozen</summary><p>Disable the last theme or extension you installed, then run <code>snowtify repair</code>. <code>snowtify doctor</code> lists anything missing.</p></details>
+          <details><summary>Spotify is back to normal and stays that way</summary><p>That brand-new Spotify version isn't supported yet, so the guard kept Spotify working. It reapplies automatically once a Snowtify update ships; <code>snowtify logs</code> shows the details.</p></details>
+          <details><summary>PowerShell can't find the snowtify command</summary><p>Close and reopen PowerShell so it reloads your PATH, then run <code>snowtify -v</code>.</p></details>
+        </section>
+
+        <section class="doc-section searchable" id="uninstall" data-search="uninstall remove delete cleanup">
+          <div class="section-heading"><span>09</span><div><h2>Uninstall</h2><p>Restores Spotify first, then removes Snowtify.</p></div></div>
+          <div class="note warn"><i data-lucide="triangle-alert"></i><p><strong>Only run this to remove Snowtify.</strong> It stops the guard, restores Spotify and deletes the Snowtify program. Your other Spicetify themes and settings are left untouched.</p></div>
+          <div class="code-block">
+            <div class="code-title"><span>PowerShell</span><button class="copy-btn" type="button" data-copy="uninstall-code"><i data-lucide="copy"></i>Copy</button></div>
+            <pre><code id="uninstall-code">iwr -useb https://raw.githubusercontent.com/SnoW-099/snowtify/main/uninstall.ps1 | iex</code></pre>
+          </div>
+        </section>
+
+        <div class="no-results" hidden><p>No matching section.</p></div>
       </article>
     </main>
-    <div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="check"></i> Copied</div>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <a class="brand" href="index.html"><img src="assets/snowtify-icon.png" alt="" width="24" height="24" /><span>Snowtify</span></a>
+        <p>An independent project by SnoW-099, based on Spicetify CLI. Not affiliated with Spotify.</p>
+        <nav aria-label="Footer"><a href="index.html">Home</a><a href="https://github.com/SnoW-099/snowtify/releases" target="_blank" rel="noreferrer">Releases</a><a href="https://github.com/SnoW-099/snowtify" target="_blank" rel="noreferrer">GitHub</a></nav>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="check"></i><span>Copied to clipboard</span></div>
   </body>
 </html>

@@ -5,8 +5,9 @@
   "scripts": {
     "build:wrapper": "node scripts/build-wrapper.mjs",
     "check:wrapper": "node scripts/build-wrapper.mjs --check",
-    "fmt": "oxfmt scripts src/jsHelper/spicetifyWrapper package.json .oxfmtrc.json .oxlintrc.json",
-    "fmt:check": "oxfmt --check scripts src/jsHelper/spicetifyWrapper package.json .oxfmtrc.json .oxlintrc.json",
+    "css-map:update": "node scripts/update-cssmap.mjs",
+    "fmt": "oxfmt scripts src/jsHelper/spicetifyWrapper package.json .oxfmtrc.json .oxlintrc.json Extensions CustomApps",
+    "fmt:check": "oxfmt --check scripts src/jsHelper/spicetifyWrapper package.json .oxfmtrc.json .oxlintrc.json Extensions CustomApps",
     "lint": "oxlint ."
   },
   "devDependencies": {

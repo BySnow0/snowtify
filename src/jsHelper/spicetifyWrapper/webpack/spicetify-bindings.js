@@ -2,6 +2,27 @@ import { fnStr } from "../shared/string.js";
 import { createReactComponents } from "./react-components.js";
 import { findReactQuery } from "./react-query.js";
 
+export function findReact(cache) {
+  return cache.find((module) => module?.createElement && module?.useLayoutEffect && module?.useMemo && module?.useReducer);
+}
+
+const reactFactoryMarkers = [
+  "react.element",
+  "react.portal",
+  "react.fragment",
+  "createContext",
+  "createElement",
+  "useLayoutEffect",
+  "useMemo",
+  "useReducer",
+];
+
+export function findReactFromWebpack(require) {
+  const reactModuleId = Object.entries(require.m).find(([, factory]) => reactFactoryMarkers.every((marker) => fnStr(factory).includes(marker)))?.[0];
+  if (!reactModuleId) return undefined;
+  return findReact([require(reactModuleId)]);
+}
+
 export function createSpicetifyBindings({
   cache,
   chunks,
@@ -14,7 +35,7 @@ export function createSpicetifyBindings({
   scrollableContainer,
 }) {
   return {
-    React: cache.find((m) => m?.useMemo),
+    React: findReact(cache),
     ReactJSX: cache.find((m) => m?.jsx),
     ReactDOM: cache.find((m) => m?.createPortal),
     ReactDOMServer: cache.find((m) => m?.renderToString),

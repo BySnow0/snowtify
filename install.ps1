@@ -4,7 +4,6 @@ $ProgressPreference = 'SilentlyContinue'
 
 #region Variables
 $snowtifyFolderPath = "$env:LOCALAPPDATA\snowtify"
-$snowtifyThemePath = "$env:APPDATA\spicetify\Themes\Snowtify"
 #endregion Variables
 
 #region Functions
@@ -156,50 +155,16 @@ function Install-Snowtify {
   }
 }
 
-function Install-SnowtifyLayer {
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [bool]$MarketplaceEnabled
-  )
+function Enable-Snowtify {
   begin {
-    $themeBaseUrl = 'https://raw.githubusercontent.com/SnoW-099/snowtify/main/Themes/Snowtify'
-    Write-Host -Object 'Installing the Snowtify Frost visual layer...' -NoNewline
+    Write-Host -Object 'Applying Snowtify to Spotify (your current theme and extensions are kept)...'
   }
   process {
-    New-Item -Path $snowtifyThemePath -ItemType 'Directory' -Force | Out-Null
-
-    foreach ($themeFile in @('color.ini', 'user.css')) {
-      $Parameters = @{
-        Uri             = "$themeBaseUrl/$themeFile"
-        UseBasicParsing = $true
-        OutFile         = "$snowtifyThemePath\$themeFile"
-      }
-      Invoke-WebRequest @Parameters
-    }
-    Write-Success
-
-    Write-Host -Object 'Configuring Snowtify Frost as the active theme...'
-    if ($MarketplaceEnabled) {
-      $bootstrapPath = "$snowtifyFolderPath\Extensions\snowtify-frost.js"
-      if (-not (Test-Path -LiteralPath $bootstrapPath -PathType 'Leaf')) {
-        throw 'This Snowtify release does not include Marketplace theme integration.'
-      }
-      & "$snowtifyFolderPath\snowtify.exe" config current_theme marketplace color_scheme Marketplace inject_css 1 replace_colors 1 extensions snowtify-frost.js
-    }
-    else {
-      & "$snowtifyFolderPath\snowtify.exe" config current_theme Snowtify color_scheme Frost inject_css 1 replace_colors 1
-    }
-    if ($LASTEXITCODE -ne 0) {
-      throw 'Snowtify could not configure the Frost visual layer.'
-    }
-
     $snowtifyStatePath = if ($env:SPICETIFY_STATE) { $env:SPICETIFY_STATE } else { "$env:APPDATA\spicetify" }
     $backupPath = "$snowtifyStatePath\Backup"
     $hasBackup = (Test-Path -LiteralPath $backupPath -PathType 'Container') -and
       [bool](Get-ChildItem -LiteralPath $backupPath -Force -ErrorAction 'SilentlyContinue' | Select-Object -First 1)
 
-    Write-Host -Object 'Applying the Snowtify layer to Spotify...'
     if ($hasBackup) {
       & "$snowtifyFolderPath\snowtify.exe" restore backup apply
     }
@@ -207,14 +172,20 @@ function Install-SnowtifyLayer {
       & "$snowtifyFolderPath\snowtify.exe" backup apply
     }
     if ($LASTEXITCODE -ne 0) {
-      throw 'Snowtify could not apply the Frost visual layer.'
+      throw 'Snowtify could not be applied to Spotify.'
+    }
+
+    # Background guard: reapplies Snowtify after Spotify updates and installs
+    # Snowtify updates from inside Spotify. Not fatal if it fails.
+    & "$snowtifyFolderPath\snowtify.exe" guard install
+    if ($LASTEXITCODE -ne 0) {
+      Write-Warning -Message 'Automatic repair could not be enabled. Run "snowtify guard install" later to turn it on.'
     }
   }
   end {
-    Write-Host -Object 'Snowtify Frost is active.' -ForegroundColor 'Cyan'
+    Write-Host -Object 'Snowtify is active.' -ForegroundColor 'Cyan'
   }
-}
-#endregion Functions
+}#endregion Functions
 
 #region Main
 Show-SnowtifyBanner
@@ -279,10 +250,6 @@ Write-Host -Object 'to get started'
 #endregion Snowtify
 
 #region Marketplace
-$marketplaceAppPath = "$env:APPDATA\spicetify\CustomApps\marketplace"
-$marketplaceThemePath = "$env:APPDATA\spicetify\Themes\marketplace"
-$marketplaceInstalled = (Test-Path -LiteralPath $marketplaceAppPath -PathType 'Container') -and
-  (Test-Path -LiteralPath $marketplaceThemePath -PathType 'Container')
 $Host.UI.RawUI.Flushinputbuffer()
 $choices = [System.Management.Automation.Host.ChoiceDescription[]] @(
     (New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Install Spicetify Marketplace (compatible with Snowtify)."),
@@ -299,12 +266,10 @@ else {
     UseBasicParsing = $true
   }
   Invoke-WebRequest @Parameters | Invoke-Expression
-  $marketplaceInstalled = (Test-Path -LiteralPath $marketplaceAppPath -PathType 'Container') -and
-    (Test-Path -LiteralPath $marketplaceThemePath -PathType 'Container')
 }
 #endregion Marketplace
 
-#region Snowtify Layer
-Install-SnowtifyLayer -MarketplaceEnabled $marketplaceInstalled
-#endregion Snowtify Layer
+#region Apply
+Enable-Snowtify
+#endregion Apply
 #endregion Main

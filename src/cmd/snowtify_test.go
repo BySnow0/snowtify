@@ -27,57 +27,27 @@ func assertConfigValue(t *testing.T, section *ini.Section, key, expected string)
 	}
 }
 
-func TestMigrateSnowtifyFrostConfig(t *testing.T) {
-	settings, features := newFrostTestSections(t)
-
-	settings.Key("current_theme").SetValue("Snowtify")
-	settings.Key("color_scheme").SetValue("Frost")
-	features.Key("extensions").SetValue("existing.js")
-
-	if !migrateSnowtifyFrostConfig(settings, features) {
-		t.Fatal("expected legacy Frost config to migrate")
-	}
-	assertConfigValue(t, settings, "current_theme", "marketplace")
-	assertConfigValue(t, settings, "color_scheme", "Marketplace")
-	assertConfigValue(t, settings, "inject_css", "1")
-	assertConfigValue(t, settings, "replace_colors", "1")
-	assertConfigValue(t, features, "extensions", "existing.js|snowtify-frost.js")
-}
-
-func TestMigrateSnowtifyFrostConfigIsIdempotent(t *testing.T) {
-	settings, features := newFrostTestSections(t)
-
-	settings.Key("current_theme").SetValue("snowtify")
-	features.Key("extensions").SetValue("snowtify-frost.js")
-
-	if !migrateSnowtifyFrostConfig(settings, features) {
-		t.Fatal("expected legacy Frost config to migrate")
-	}
-	assertConfigValue(t, features, "extensions", "snowtify-frost.js")
-}
-
-func TestMigrateSnowtifyFrostConfigLeavesOtherThemesAlone(t *testing.T) {
+func TestRemoveSnowtifyFrostBootstrap(t *testing.T) {
 	settings, features := newFrostTestSections(t)
 
 	settings.Key("current_theme").SetValue("marketplace")
-	features.Key("extensions").SetValue("another.js")
+	features.Key("extensions").SetValue("existing.js|snowtify-frost.js|other.js")
 
-	if migrateSnowtifyFrostConfig(settings, features) {
-		t.Fatal("expected non-Frost theme to remain unchanged")
+	if !removeSnowtifyFrostBootstrap(features) {
+		t.Fatal("expected the Frost bootstrap to be removed")
 	}
+	assertConfigValue(t, features, "extensions", "existing.js|other.js")
 	assertConfigValue(t, settings, "current_theme", "marketplace")
-	assertConfigValue(t, features, "extensions", "another.js")
 }
 
-func TestMigrateSnowtifyFrostConfigHandlesEmptyExtensions(t *testing.T) {
-	settings, features := newFrostTestSections(t)
-	settings.Key("current_theme").SetValue("Snowtify")
-	features.Key("extensions").SetValue("")
+func TestRemoveSnowtifyFrostBootstrapLeavesConfigAlone(t *testing.T) {
+	_, features := newFrostTestSections(t)
+	features.Key("extensions").SetValue("another.js")
 
-	if !migrateSnowtifyFrostConfig(settings, features) {
-		t.Fatal("expected legacy Frost config to migrate")
+	if removeSnowtifyFrostBootstrap(features) {
+		t.Fatal("expected no change without the Frost bootstrap")
 	}
-	assertConfigValue(t, features, "extensions", "snowtify-frost.js")
+	assertConfigValue(t, features, "extensions", "another.js")
 }
 
 func TestRemoveConfigListValueRemovesSnowtifyOnly(t *testing.T) {

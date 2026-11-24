@@ -75,23 +75,23 @@ const overlayStyles = `
   #snowtify-updater { --ice: #8fe3fb; --ice-soft: #c9f1ff; --ink: #05121a; --text: #eef8fc; --muted: #8ea4ae; --faint: #4d626b;
     position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; padding: 20px; overflow: hidden;
     background: radial-gradient(90% 70% at 50% 0%, rgba(143, 227, 251, 0.10), transparent 65%),
-      radial-gradient(120% 120% at 50% 120%, rgba(0, 0, 0, 0.55), transparent 60%), rgba(4, 10, 14, 0.78);
-    backdrop-filter: blur(28px) saturate(120%); -webkit-backdrop-filter: blur(28px) saturate(120%);
+      radial-gradient(120% 120% at 50% 120%, rgba(0, 0, 0, 0.55), transparent 60%), rgba(4, 10, 14, 0.975);
     color: var(--text); font-family: var(--font-family, "SpotifyMixUI", system-ui, sans-serif);
     -webkit-font-smoothing: antialiased; animation: su-fade 420ms ease-out both; }
   #snowtify-updater * { box-sizing: border-box; }
-  #snowtify-updater canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #snowtify-updater canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; contain: strict; }
   #snowtify-updater .su-card { position: relative; width: min(440px, 100%); padding: 28px 28px 22px;
     border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.07);
     background: linear-gradient(180deg, rgba(16, 30, 37, 0.86), rgba(8, 17, 22, 0.9));
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 40px 100px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.35);
-    animation: su-rise 640ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+    animation: su-rise 640ms cubic-bezier(0.16, 1, 0.3, 1) both; will-change: transform; }
   #snowtify-updater .su-card::before { content: ""; position: absolute; inset: -1px 24px auto; height: 1px;
     background: linear-gradient(90deg, transparent, rgba(143, 227, 251, 0.55), transparent); }
   #snowtify-updater .su-head { display: flex; align-items: center; gap: 16px; }
   #snowtify-updater .su-mark { position: relative; flex: none; width: 60px; height: 60px; display: grid; place-items: center; }
-  #snowtify-updater .su-mark svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: su-spin 1.6s linear infinite; }
-  #snowtify-updater .su-mark img { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(143, 227, 251, 0.35)); }
+  #snowtify-updater .su-mark svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: su-spin 1.6s linear infinite; will-change: transform; }
+  #snowtify-updater .su-mark::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: radial-gradient(circle, rgba(143, 227, 251, 0.28), transparent 70%); }
+  #snowtify-updater .su-mark img { position: relative; width: 34px; height: 34px; object-fit: contain; }
   #snowtify-updater .su-eyebrow { display: block; margin-bottom: 4px; color: var(--ice); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
   #snowtify-updater h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
   #snowtify-updater .su-versions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 20px 0 0; }
@@ -103,7 +103,7 @@ const overlayStyles = `
   #snowtify-updater .su-meta { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   #snowtify-updater .su-meta strong { color: var(--text); font-weight: 600; }
   #snowtify-updater .su-track { position: relative; height: 3px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
-  #snowtify-updater .su-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit;
+  #snowtify-updater .su-fill { position: absolute; inset: 0; border-radius: inherit; transform: scaleX(0); transform-origin: left center; will-change: transform; transition: transform 900ms cubic-bezier(0.25, 0.8, 0.25, 1);
     background: linear-gradient(90deg, #4fc9ef, var(--ice-soft)); box-shadow: 0 0 12px rgba(143, 227, 251, 0.6); }
   #snowtify-updater .su-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
     animation: su-sheen 1.8s ease-in-out infinite; }
@@ -115,7 +115,7 @@ const overlayStyles = `
   #snowtify-updater li .su-dot::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.6; }
   #snowtify-updater li .su-dot svg { display: none; width: 11px; height: 11px; }
   #snowtify-updater li[data-state="active"] { color: var(--text); }
-  #snowtify-updater li[data-state="active"] .su-dot { border-color: rgba(143, 227, 251, 0.25); border-top-color: var(--ice); animation: su-spin 0.9s linear infinite; }
+  #snowtify-updater li[data-state="active"] .su-dot { border-color: rgba(143, 227, 251, 0.25); border-top-color: var(--ice); animation: su-spin 0.9s linear infinite; will-change: transform; }
   #snowtify-updater li[data-state="active"] .su-dot::before { background: var(--ice); opacity: 1; }
   #snowtify-updater li[data-state="done"] { color: var(--muted); }
   #snowtify-updater li[data-state="done"] .su-dot { background: var(--ice); border-color: var(--ice); color: var(--ink); }
@@ -158,82 +158,138 @@ const icons = {
 };
 
 // Layered snowfall on a canvas: far flakes are small, dim and slow; near
-// flakes are larger and faster, with a gentle shared wind. Stops itself when
-// the overlay is removed and draws a still frame for reduced motion.
-function startSnow(canvas) {
-  const context = canvas.getContext("2d");
+// flakes are larger and faster, with a gentle shared wind.
+// Performance: flakes are pre-rendered sprites blitted with drawImage, the
+// backing store is capped at 1.5x, the flake count adapts to the measured
+// frame time, and everything pauses while the window is hidden. A single
+// requestAnimationFrame loop also drives `onFrame` (the progress bar).
+const SPRITE_SIZES = [2, 3, 4, 6];
+
+function makeFlakeSprites(ratio) {
+  return SPRITE_SIZES.map((size) => {
+    const pixels = Math.ceil(size * 2 * ratio) + 2;
+    const sprite = document.createElement("canvas");
+    sprite.width = sprite.height = pixels;
+    const context = sprite.getContext("2d");
+    const center = pixels / 2;
+    const gradient = context.createRadialGradient(center, center, 0, center, center, center);
+    gradient.addColorStop(0, "rgba(240, 250, 255, 1)");
+    gradient.addColorStop(0.45, "rgba(225, 245, 255, 0.85)");
+    gradient.addColorStop(1, "rgba(225, 245, 255, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, pixels, pixels);
+    return { canvas: sprite, size: size * 2 };
+  });
+}
+
+function startSnow(canvas, root, onFrame) {
+  const context = canvas.getContext("2d", { alpha: true });
   const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+  const sprites = makeFlakeSprites(ratio);
   let width = 0;
   let height = 0;
   let flakes = [];
+  let budget = 1; // fraction of flakes drawn; lowered on slow machines
 
   const spawn = (anywhere) => {
     const depth = Math.random() ** 1.6; // more far flakes than near ones
     return {
       x: Math.random() * width,
-      y: anywhere ? Math.random() * height : -10,
-      r: 0.6 + depth * 2.6,
+      y: anywhere ? Math.random() * height : -12,
+      sprite: sprites[Math.min(sprites.length - 1, Math.floor(depth * sprites.length))],
       speed: 14 + depth * 58,
-      alpha: 0.22 + depth * 0.65,
-      sway: 6 + Math.random() * 18,
+      alpha: 0.25 + depth * 0.65,
+      sway: 6 + Math.random() * 16,
       phase: Math.random() * Math.PI * 2,
       depth,
     };
   };
 
   const resize = () => {
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
     width = canvas.clientWidth;
     height = canvas.clientHeight;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.min(220, Math.round((width * height) / 7000));
+    const count = Math.min(170, Math.round((width * height) / 9000));
     flakes = Array.from({ length: count }, () => spawn(true));
   };
 
   const draw = (time) => {
     context.clearRect(0, 0, width, height);
-    for (const flake of flakes) {
-      const x = flake.x + Math.sin(time / 1000 + flake.phase) * flake.sway;
+    const visible = Math.ceil(flakes.length * budget);
+    const t = time / 1000;
+    for (let i = 0; i < visible; i++) {
+      const flake = flakes[i];
+      const { canvas: image, size } = flake.sprite;
       context.globalAlpha = flake.alpha;
-      context.beginPath();
-      context.arc(x, flake.y, flake.r, 0, Math.PI * 2);
-      context.fill();
+      context.drawImage(image, flake.x + Math.sin(t + flake.phase) * flake.sway - size / 2, flake.y - size / 2, size, size);
     }
+    context.globalAlpha = 1;
   };
 
   resize();
-  context.fillStyle = "#e9f8ff";
   window.addEventListener("resize", resize);
 
-  if (reduced) {
-    draw(0);
-    return () => window.removeEventListener("resize", resize);
-  }
-
-  let last = performance.now();
   let frame = 0;
+  let last = performance.now();
+  let slowFrames = 0;
+  let fastFrames = 0;
+
   const loop = (now) => {
-    const delta = Math.min(0.05, (now - last) / 1000);
-    last = now;
-    const wind = Math.sin(now / 4200) * 14;
-    for (let i = 0; i < flakes.length; i++) {
-      const flake = flakes[i];
-      flake.y += flake.speed * delta;
-      flake.x += wind * flake.depth * delta;
-      if (flake.y > height + 10 || flake.x < -30 || flake.x > width + 30) flakes[i] = spawn(false);
-    }
-    context.fillStyle = "#e9f8ff";
-    draw(now);
+    if (!root.isConnected) return stop();
     frame = requestAnimationFrame(loop);
+    // ~30 fps is plenty for slow-falling snow and halves the drawing work.
+    if (now - last < 31) return;
+    const elapsed = now - last;
+    last = now;
+
+    if (!reduced) {
+      const delta = Math.min(0.05, elapsed / 1000);
+      const wind = Math.sin(now / 4200) * 14;
+      for (let i = 0; i < flakes.length; i++) {
+        const flake = flakes[i];
+        flake.y += flake.speed * delta;
+        flake.x += wind * flake.depth * delta;
+        if (flake.y > height + 12 || flake.x < -30 || flake.x > width + 30) flakes[i] = spawn(false);
+      }
+      draw(now);
+
+      // Adaptive quality: drop flakes when frames run long, recover slowly.
+      if (elapsed > 50) {
+        if (++slowFrames > 20) {
+          budget = Math.max(0.35, budget - 0.15);
+          slowFrames = 0;
+        }
+      } else if (elapsed < 40 && budget < 1 && ++fastFrames > 120) {
+        budget = Math.min(1, budget + 0.1);
+        fastFrames = 0;
+      }
+    }
+
+    onFrame?.(now);
   };
+
+  const onVisibility = () => {
+    cancelAnimationFrame(frame);
+    if (!document.hidden) {
+      last = performance.now();
+      frame = requestAnimationFrame(loop);
+    }
+  };
+  document.addEventListener("visibilitychange", onVisibility);
+
+  if (reduced) draw(0);
+  last = performance.now() - 40;
   frame = requestAnimationFrame(loop);
 
-  return () => {
+  function stop() {
     cancelAnimationFrame(frame);
     window.removeEventListener("resize", resize);
-  };
+    document.removeEventListener("visibilitychange", onVisibility);
+  }
+  return stop;
 }
 
 function createUpdatingOverlay({ currentVersion, latestVersion }) {
@@ -276,16 +332,22 @@ function createUpdatingOverlay({ currentVersion, latestVersion }) {
   let stepIndex = 0;
   let shown = 0;
   let stepStarted = performance.now();
-  let progressFrame = 0;
+  let shownPercent = -1;
+  let lastProgressUpdate = 0;
   const animateProgress = (now) => {
+    // A few updates per second; the CSS transition fills in the motion.
+    if (now - lastProgressUpdate < 400) return;
+    lastProgressUpdate = now;
     const [from, to] = stepProgress[stepIndex];
     const creep = from + (to - from) * (1 - Math.exp(-(now - stepStarted) / 9000));
-    shown += (creep - shown) * 0.08;
-    fill.style.width = `${shown.toFixed(2)}%`;
-    percentLabel.textContent = `${Math.round(shown)}%`;
-    progressFrame = requestAnimationFrame(animateProgress);
+    shown += (creep - shown) * 0.45;
+    fill.style.transform = `scaleX(${(shown / 100).toFixed(4)})`;
+    const percent = Math.round(shown);
+    if (percent !== shownPercent) {
+      shownPercent = percent;
+      percentLabel.textContent = `${percent}%`;
+    }
   };
-  progressFrame = requestAnimationFrame(animateProgress);
 
   const setStep = (current) => {
     const index = Math.max(0, steps.indexOf(current));
@@ -305,7 +367,6 @@ function createUpdatingOverlay({ currentVersion, latestVersion }) {
   const close = () => {
     root.dataset.leaving = "";
     setTimeout(() => {
-      cancelAnimationFrame(progressFrame);
       stopSnow();
       root.remove();
     }, 280);
@@ -328,7 +389,7 @@ function createUpdatingOverlay({ currentVersion, latestVersion }) {
   setStep("downloading");
   document.body.append(root);
   // Start after insertion so the canvas has real dimensions.
-  stopSnow = startSnow(root.querySelector("canvas"));
+  stopSnow = startSnow(root.querySelector("canvas"), root, animateProgress);
   return { setStep, fail, close };
 }
 

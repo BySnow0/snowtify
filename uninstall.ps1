@@ -14,6 +14,9 @@ Write-Host -Object 'Snowtify Uninstaller' -ForegroundColor 'Cyan'
 Write-Host -Object '--------------------' -ForegroundColor 'DarkGray'
 
 if (Test-Path -LiteralPath $snowtifyExecutablePath -PathType 'Leaf') {
+  Write-Step 'Stopping the Snowtify guard...'
+  & $snowtifyExecutablePath guard uninstall | Out-Null
+
   Write-Step 'Restoring Spotify to its original state...'
   & $snowtifyExecutablePath restore
   if ($LASTEXITCODE -ne 0) {

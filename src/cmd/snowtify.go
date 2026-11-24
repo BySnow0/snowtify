@@ -71,24 +71,16 @@ func removeConfigListValue(section *ini.Section, keyName, value string) bool {
 	return true
 }
 
-// MigrateSnowtifyFrost moves the legacy local Frost theme to Marketplace's
-// theme runtime, allowing Marketplace themes to be installed and removed.
+// MigrateSnowtifyFrost removes the retired Frost bootstrap extension, which
+// used to make Frost the active theme automatically. Snowtify no longer picks
+// a theme for the user; Frost stays available in Marketplace like any other.
 func MigrateSnowtifyFrost() (bool, error) {
-	marketplaceApp := filepath.Join(spicetifyFolder, "CustomApps", "marketplace")
-	marketplaceTheme := filepath.Join(spicetifyFolder, "Themes", "marketplace")
-	if !directoryExists(marketplaceApp) || !directoryExists(marketplaceTheme) {
+	if !removeSnowtifyFrostBootstrap(featureSection) {
 		return false, nil
 	}
-
-	if !migrateSnowtifyFrostConfig(settingSection, featureSection) {
-		return false, nil
-	}
-
 	if err := cfg.Write(); err != nil {
-		return false, fmt.Errorf("failed to migrate Snowtify Frost: %w", err)
+		return false, fmt.Errorf("failed to remove the Snowtify Frost bootstrap: %w", err)
 	}
-
-	utils.PrintSuccess("Migrated Snowtify Frost to Marketplace theme management")
 	return true, nil
 }
 
@@ -97,30 +89,23 @@ func directoryExists(path string) bool {
 	return err == nil && info.IsDir()
 }
 
-func migrateSnowtifyFrostConfig(settings, features *ini.Section) bool {
-	if !strings.EqualFold(strings.TrimSpace(settings.Key("current_theme").String()), "Snowtify") {
-		return false
-	}
-
-	settings.Key("current_theme").SetValue("marketplace")
-	settings.Key("color_scheme").SetValue("Marketplace")
-	settings.Key("inject_css").SetValue("1")
-	settings.Key("replace_colors").SetValue("1")
-
+func removeSnowtifyFrostBootstrap(features *ini.Section) bool {
 	extensions := features.Key("extensions").Strings("|")
-	cleanExtensions := make([]string, 0, len(extensions)+1)
+	kept := make([]string, 0, len(extensions))
+	removed := false
 	for _, extension := range extensions {
 		extension = strings.TrimSpace(extension)
 		if extension == "" {
 			continue
 		}
 		if strings.EqualFold(extension, snowtifyFrostBootstrap) {
-			return true
+			removed = true
+			continue
 		}
-		cleanExtensions = append(cleanExtensions, extension)
+		kept = append(kept, extension)
 	}
-
-	cleanExtensions = append(cleanExtensions, snowtifyFrostBootstrap)
-	features.Key("extensions").SetValue(strings.Join(cleanExtensions, "|"))
-	return true
+	if removed {
+		features.Key("extensions").SetValue(strings.Join(kept, "|"))
+	}
+	return removed
 }

@@ -1,0 +1,137 @@
+name: Upstream sync
+
+# Keeps Snowtify in step with spicetify/cli. Every few hours it checks the
+# latest upstream release; when there is one Snowtify has not shipped yet it
+# merges it into main, verifies the build, tags vX.Y.Z-snow.1 and starts the
+# release build. If the merge conflicts it opens a PR to resolve by hand.
+
+on:
+  schedule:
+    - cron: "17 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      upstream_tag:
+        description: "Upstream tag to sync (empty = latest release)"
+        required: false
+      force:
+        description: "Sync even if a Snowtify release for this version exists"
+        type: boolean
+        default: false
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Resolve upstream version
+        id: version
+        run: |
+          tag="${{ inputs.upstream_tag }}"
+          if [ -z "$tag" ]; then
+            tag=$(gh api repos/spicetify/cli/releases/latest --jq .tag_name)
+          fi
+          upstream="${tag#v}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "upstream=$upstream" >> "$GITHUB_OUTPUT"
+
+          existing=$(gh api "repos/${{ github.repository }}/releases?per_page=100" \
+            --jq "[.[] | select(.tag_name | startswith(\"v$upstream-snow.\"))] | length")
+          if [ "$existing" -gt 0 ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Snowtify already ships upstream $upstream."
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Next free -snow.N for this upstream version
+          n=1
+          while gh api "repos/${{ github.repository }}/git/ref/tags/v$upstream-snow.$n" >/dev/null 2>&1; do
+            n=$((n + 1))
+          done
+          echo "snow_tag=v$upstream-snow.$n" >> "$GITHUB_OUTPUT"
+          echo "needed=true" >> "$GITHUB_OUTPUT"
+          echo "Will sync upstream $tag as v$upstream-snow.$n"
+
+      - name: Checkout
+        if: steps.version.outputs.needed == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream
+        id: merge
+        if: steps.version.outputs.needed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/spicetify/cli.git
+          git fetch --no-tags upstream "refs/tags/${{ steps.version.outputs.tag }}:refs/upstream-tag"
+
+          if git merge-base --is-ancestor refs/upstream-tag HEAD; then
+            echo "Upstream ${{ steps.version.outputs.tag }} is already merged."
+            echo "result=already" >> "$GITHUB_OUTPUT"
+          elif git merge --no-ff refs/upstream-tag -m "Sync upstream Spicetify ${{ steps.version.outputs.tag }}"; then
+            echo "result=clean" >> "$GITHUB_OUTPUT"
+          else
+            git merge --abort
+            echo "result=conflict" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open conflict PR
+        if: steps.merge.outputs.result == 'conflict'
+        run: |
+          branch="sync/upstream-${{ steps.version.outputs.tag }}"
+          git push --force origin "refs/upstream-tag:refs/heads/$branch"
+          if ! gh pr list --head "$branch" --state open --json number --jq '.[0].number' | grep -q .; then
+            gh pr create --base main --head "$branch" \
+              --title "Sync upstream Spicetify ${{ steps.version.outputs.tag }} (conflicts)" \
+              --body "The automatic sync could not merge \`${{ steps.version.outputs.tag }}\` cleanly. Resolve the conflicts, merge, then tag \`${{ steps.version.outputs.snow_tag }}\` to release."
+          fi
+          echo "::warning::Merge conflict with upstream ${{ steps.version.outputs.tag }}; PR opened."
+
+      - name: Setup pnpm
+        if: steps.merge.outputs.result == 'clean' || steps.merge.outputs.result == 'already'
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        if: steps.merge.outputs.result == 'clean' || steps.merge.outputs.result == 'already'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Setup Go
+        if: steps.merge.outputs.result == 'clean' || steps.merge.outputs.result == 'already'
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: "go.mod"
+
+      - name: Verify build
+        if: steps.merge.outputs.result == 'clean' || steps.merge.outputs.result == 'already'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm check:wrapper
+          go build .
+          go test ./...
+
+      - name: Push, tag and release
+        if: steps.merge.outputs.result == 'clean' || steps.merge.outputs.result == 'already'
+        run: |
+          tag="${{ steps.version.outputs.snow_tag }}"
+          git push origin HEAD:main
+          git tag -a "$tag" -m "Snowtify $tag (upstream ${{ steps.version.outputs.tag }})"
+          git push origin "$tag"
+          # Tags pushed with GITHUB_TOKEN do not trigger workflows, so start the
+          # release build explicitly on the new tag. It creates the GitHub
+          # release together with its binaries.
+          gh workflow run build.yml --ref "$tag"

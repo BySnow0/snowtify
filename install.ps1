@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 #region Variables
@@ -254,6 +255,23 @@ else {
 #endregion Checks
 
 #region Snowtify
+$installedSnowtify = Join-Path -Path $snowtifyFolderPath -ChildPath 'snowtify.exe'
+if (Test-Path -LiteralPath $installedSnowtify -PathType Leaf) {
+  $Host.UI.RawUI.Flushinputbuffer()
+  $choices = [System.Management.Automation.Host.ChoiceDescription[]] @(
+    (New-Object System.Management.Automation.Host.ChoiceDescription '&Yes', 'Run snowtify update.'),
+    (New-Object System.Management.Automation.Host.ChoiceDescription '&No', 'Continue with installation.')
+  )
+  $choice = $Host.UI.PromptForChoice('', 'Snowtify is already installed. Do you want to update and repair it instead?', $choices, 0)
+  if ($choice -eq 0) {
+    & $installedSnowtify update
+    if ($LASTEXITCODE -ne 0) {
+      throw "Snowtify update failed with exit code $LASTEXITCODE."
+    }
+    return
+  }
+}
+
 Install-Snowtify
 Write-Host -Object "`nRun" -NoNewline
 Write-Host -Object ' snowtify -h ' -NoNewline -ForegroundColor 'Cyan'
